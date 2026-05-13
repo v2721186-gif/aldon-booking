@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aldon Booking</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:black;
+  color:white;
+  min-height:100vh;
+}
+
+header{
+  background:#111;
+  padding:25px;
+  text-align:center;
+  border-bottom:2px solid gold;
+}
+
+.logo{
+  color:gold;
+  font-size:40px;
+  font-weight:bold;
+}
+
+.hero{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:50px 20px;
+}
+
+.booking-card{
+  background:#111;
+  width:450px;
+  padding:35px;
+  border-radius:25px;
+  border:1px solid #333;
+  box-shadow:0 0 25px rgba(255,215,0,0.2);
+}
+
+.booking-card h2{
+  color:gold;
+  margin-bottom:30px;
+  text-align:center;
+}
+
+input,
+select{
+  width:100%;
+  padding:15px;
+  margin-bottom:18px;
+  border:none;
+  border-radius:14px;
+  background:#1b1b1b;
+  color:white;
+  font-size:16px;
+  border:1px solid #333;
+}
+
+input:focus,
+select:focus{
+  outline:none;
+  border:1px solid gold;
+}
+
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:gold;
+  color:black;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.booking-list{
+  margin-top:30px;
+}
+
+.booking-item{
+  background:#1b1b1b;
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:15px;
+  border-left:4px solid gold;
+}
+
+.booking-item h3{
+  color:gold;
+  margin-bottom:8px;
+}
+
+.footer{
+  text-align:center;
+  padding:20px;
+  color:#777;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">ALDON</div>
+</header>
+
+<section class="hero">
+
+<div class="booking-card">
+
+<h2>Book Appointment / احجز موعد</h2>
+
+<input type="text" id="name" placeholder="Full Name / الاسم الكامل">
+
+<input type="email" id="email" placeholder="Email Address / البريد الإلكتروني">
+
+<input type="tel" id="phone" placeholder="Phone Number / رقم الهاتف">
+
+<select id="barber">
+  <option>Select Barber / اختر الحلاق</option>
+  <option>Ahmed / أحمد</option>
+  <option>Khaled / خالد</option>
+  <option>Faisal / فيصل</option>
+</select>
+
+<select id="date">
+  <option>Select Day / اختر اليوم</option>
+
+  <option>Saturday / السبت</option>
+  <option>Sunday / الأحد</option>
+  <option>Monday / الإثنين</option>
+  <option>Tuesday / الثلاثاء</option>
+  <option>Wednesday / الأربعاء</option>
+  <option>Thursday / الخميس</option>
+
+</select>
+
+<select id="time">
+  <option>Select Time / اختر الوقت</option>
+
+  <option>11:00 AM</option>
+  <option>12:00 PM</option>
+  <option>1:00 PM</option>
+  <option>2:00 PM</option>
+  <option>3:00 PM</option>
+  <option>4:00 PM</option>
+  <option>5:00 PM</option>
+  <option>6:00 PM</option>
+  <option>7:00 PM</option>
+  <option>8:00 PM</option>
+  <option>9:00 PM</option>
+  <option>10:00 PM</option>
+  <option>11:00 PM</option>
+  <option>12:00 AM</option>
+</select>
+
+<select id="service">
+  <option>Select Service / اختر الخدمة</option>
+  <option>Haircut / قص شعر</option>
+  <option>Fade + Beard / تدريج ولحية</option>
+  <option>Luxury Styling / تصفيف فاخر</option>
+</select>
+
+<button onclick="bookNow()">
+Confirm Booking / تأكيد الحجز
+</button>
+
+<div class="booking-list" id="bookingList"></div>
+
+</div>
+
+</section>
+
+<div class="footer">
+  Aldon Booking System © 2026
+</div>
+
+<script>
+
+loadBookings();
+
+function bookNow(){
+
+  const booking = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    barber: document.getElementById("barber").value,
+    date: document.getElementById("date").value,
+    time: document.getElementById("time").value,
+    service: document.getElementById("service").value
+  };
+
+  if(
+    booking.name === "" ||
+    booking.phone === "" ||
+    booking.date === ""
+  ){
+    alert("Please fill all required fields / الرجاء تعبئة جميع الحقول");
+    return;
+  }
+
+  let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+  bookings.push(booking);
+
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+
+  alert(
+`Booking Confirmed ✅
+
+Name: ${booking.name}
+Phone: ${booking.phone}
+Barber: ${booking.barber}
+Day: ${booking.date}
+Time: ${booking.time}
+Service: ${booking.service}
+
+تم تأكيد الحجز`
+  );
+
+  loadBookings();
+
+}
+
+function loadBookings(){
+
+  const bookingList = document.getElementById("bookingList");
+
+  let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+  bookingList.innerHTML = "";
+
+  bookings.forEach((booking)=>{
+
+    bookingList.innerHTML += `
+    
+    <div class="booking-item">
+      <h3>${booking.name}</h3>
+      <p>📞 ${booking.phone}</p>
+      <p>💈 ${booking.barber}</p>
+      <p>📅 ${booking.date}</p>
+      <p>⏰ ${booking.time}</p>
+      <p>✂️ ${booking.service}</p>
+    </div>
+
+    `;
+
+  });
+
+}
+
+</script>
+
+</body>
+</html>

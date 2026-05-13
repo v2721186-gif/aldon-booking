@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    h1 {
+      color: gold;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #111;
+    }
+
+    th,
+    td {
+      border: 1px solid #333;
+      padding: 15px;
+      text-align: left;
+    }
+
+    th {
+      background: #222;
+      color: gold;
+    }
+
+    button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Bookings Dashboard</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Service</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+
+  <tbody id="bookingTable"></tbody>
+</table>
+
+<script>
+let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+const table = document.getElementById('bookingTable');
+
+function renderBookings() {
+  table.innerHTML = '';
+
+  bookings.forEach((booking, index) => {
+    table.innerHTML += `
+      <tr>
+        <td>${booking.name}</td>
+        <td>${booking.email}</td>
+        <td>${booking.date}</td>
+        <td>${booking.time}</td>
+        <td>${booking.service}</td>
+        <td>
+          <button onclick="deleteBooking(${index})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function deleteBooking(index) {
+  bookings.splice(index, 1);
+  localStorage.setItem('bookings', JSON.stringify(bookings));
+  renderBookings();
+}
+
+renderBookings();
+</script>
+
+</body>
+</html>
