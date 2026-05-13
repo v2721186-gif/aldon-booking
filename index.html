@@ -68,12 +68,6 @@ select{
   border:1px solid #333;
 }
 
-input:focus,
-select:focus{
-  outline:none;
-  border:1px solid gold;
-}
-
 button{
   width:100%;
   padding:16px;
@@ -84,23 +78,6 @@ button{
   font-size:18px;
   font-weight:bold;
   cursor:pointer;
-}
-
-.booking-list{
-  margin-top:30px;
-}
-
-.booking-item{
-  background:#1b1b1b;
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:15px;
-  border-left:4px solid gold;
-}
-
-.booking-item h3{
-  color:gold;
-  margin-bottom:8px;
 }
 
 .footer{
@@ -166,6 +143,7 @@ button{
   <option>10:00 PM</option>
   <option>11:00 PM</option>
   <option>12:00 AM</option>
+
 </select>
 
 <select id="service">
@@ -179,8 +157,6 @@ button{
 Confirm Booking / تأكيد الحجز
 </button>
 
-<div class="booking-list" id="bookingList"></div>
-
 </div>
 
 </section>
@@ -189,11 +165,31 @@ Confirm Booking / تأكيد الحجز
   Aldon Booking System © 2026
 </div>
 
-<script>
+<script type="module">
 
-loadBookings();
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-function bookNow(){
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDx7tp4GyGn41rySerMYxRuRL1SbEYvFI",
+  authDomain: "don-booking.firebaseapp.com",
+  projectId: "don-booking",
+  storageBucket: "don-booking.firebasestorage.app",
+  messagingSenderId: "794739402330",
+  appId: "1:794739402330:web:e55f8eff314a6bbd905a63",
+  measurementId: "G-ZZLDFH0T1T"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+window.bookNow = async function(){
 
   const booking = {
     name: document.getElementById("name").value,
@@ -202,65 +198,25 @@ function bookNow(){
     barber: document.getElementById("barber").value,
     date: document.getElementById("date").value,
     time: document.getElementById("time").value,
-    service: document.getElementById("service").value
+    service: document.getElementById("service").value,
+    createdAt: new Date()
   };
 
-  if(
-    booking.name === "" ||
-    booking.phone === "" ||
-    booking.date === ""
-  ){
-    alert("Please fill all required fields / الرجاء تعبئة جميع الحقول");
-    return;
+  try{
+
+    await addDoc(collection(db,"bookings"), booking);
+
+    alert("Booking Saved ✅");
+
   }
 
-  let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+  catch(error){
 
-  bookings.push(booking);
+    alert("Error saving booking");
 
-  localStorage.setItem("bookings", JSON.stringify(bookings));
+    console.log(error);
 
-  alert(
-`Booking Confirmed ✅
-
-Name: ${booking.name}
-Phone: ${booking.phone}
-Barber: ${booking.barber}
-Day: ${booking.date}
-Time: ${booking.time}
-Service: ${booking.service}
-
-تم تأكيد الحجز`
-  );
-
-  loadBookings();
-
-}
-
-function loadBookings(){
-
-  const bookingList = document.getElementById("bookingList");
-
-  let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-
-  bookingList.innerHTML = "";
-
-  bookings.forEach((booking)=>{
-
-    bookingList.innerHTML += `
-    
-    <div class="booking-item">
-      <h3>${booking.name}</h3>
-      <p>📞 ${booking.phone}</p>
-      <p>💈 ${booking.barber}</p>
-      <p>📅 ${booking.date}</p>
-      <p>⏰ ${booking.time}</p>
-      <p>✂️ ${booking.service}</p>
-    </div>
-
-    `;
-
-  });
+  }
 
 }
 
